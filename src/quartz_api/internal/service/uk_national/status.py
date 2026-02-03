@@ -9,11 +9,11 @@ from sqlalchemy import create_engine, text
 from starlette import status
 
 from quartz_api.internal.models import (
-    DBClientDependency,
+    StorageClientDependency,
 )
 
 from .cache import key_builder
-from .pydantic_models import Status
+from .endpoint_types import Status
 
 router = APIRouter()
 
@@ -49,7 +49,7 @@ async def get_status() -> Status:
 @router.get("/check_last_forecast_run", include_in_schema=False)
 @cache(key_builder=key_builder)
 async def check_last_forecast_run(
-    db: DBClientDependency, model_name: str | None = None,
+    db: StorageClientDependency, model_name: str | None = None,
 ) -> dt.datetime:
     """### Check the last forecast run status.
 

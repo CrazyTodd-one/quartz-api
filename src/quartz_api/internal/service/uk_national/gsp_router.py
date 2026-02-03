@@ -2,7 +2,7 @@
 
 import asyncio
 import datetime as dt
-from collections.abc import defaultdict
+from collections import defaultdict
 from typing import TYPE_CHECKING, Annotated
 
 import pandas as pd
@@ -89,7 +89,7 @@ async def get_forecasts_for_a_specific_gsp(
         window_end=end_datetime_utc,
         energy_type=models.EnergyType.SOLAR,
         location_type=models.LocationType.GSP,
-        authdata=auth,
+        authdata={},
         created_cutoff=creation_utc_limit,
         forecast_horizon_minutes=forecast_horizon_minutes or 0,
         forecaster_name="blend",
@@ -160,7 +160,7 @@ async def get_truths_for_a_specific_gsp(
         window_end=end_datetime_utc,
         energy_type=models.EnergyType.SOLAR,
         location_type=models.LocationType.GSP,
-        authdata=auth,
+        authdata={},
         observer_name=f"pvlive_{regime}",
     )
 
@@ -277,11 +277,11 @@ async def get_all_available_forecasts(
 )
 @cache(key_builder=key_builder, expire=60 * 30)
 async def get_truths_for_all_gsps(
-    db: models.DBClientDependency,
+    db: models.StorageClientDependency,
     auth: AuthDependency,
     start_datetime_utc: models.UTCDatetimeDefaultWindowStart,
     end_datetime_utc: models.UTCDatetimeDefaultWindowEnd,
-    regime: Annotated[str, AfterValidator(lambda v: v.replace("_", "-"))] = "in-day",
+    regime: Annotated[str, AfterValidator(lambda v: v.replace("-", "_"))] = "in-day",
     gsp_ids: list[int] | None = None,
 ) -> list[GSPYieldGroupByDatetime]:
     """### Get PV_Live values for all GSPs for yesterday and today.
@@ -322,7 +322,7 @@ async def get_truths_for_all_gsps(
                     window_end=end_datetime_utc,
                     energy_type=models.EnergyType.SOLAR,
                     location_type=models.LocationType.GSP,
-                    authdata=auth,
+                    authdata={},
                     observer_name=f"pvlive_{regime}",
                 ),
             ),

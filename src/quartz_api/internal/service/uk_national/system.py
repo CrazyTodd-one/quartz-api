@@ -6,11 +6,11 @@ from starlette import status
 
 from quartz_api.internal.middleware.auth import AuthDependency
 from quartz_api.internal.models import (
-    DBClientDependency,
+    StorageClientDependency,
 )
 
 from .cache import key_builder
-from .pydantic_models import Location
+from .endpoint_types import Location
 
 router = APIRouter(tags=["System"])
 
@@ -21,7 +21,7 @@ router = APIRouter(tags=["System"])
 )
 @cache(key_builder=key_builder)
 async def get_system_details(
-    db: DBClientDependency,
+    db: StorageClientDependency,
     auth: AuthDependency,  # noqa
     gsp_id: int | None = None,
 ) -> list[Location]:

@@ -64,15 +64,16 @@ class StorageClient(models.StorageInterface):
         oauth_id: str | None = get_oauth_id_from_sub(authdata["sub"]) if authdata != {} else None
         req = dp.ListLocationsRequest(
             location_uuids_filter=[str(location_uuid)],
-            energy_source_filter=dp.EnergySource.SOLAR,
-            location_type_filter=dp.LocationType.PRIMARY_SUBSTATION,
+            energy_source_filter=energy_type_map[energy_type],
+            location_type_filter=location_type_map[location_type],
             user_oauth_id_filter=oauth_id,
         )
         resp = await self.dpc.list_locations(req)
         if len(resp.locations) == 0:
             raise HTTPException(
                 status_code=404,
-                detail=f"No substation found for UUID '{location_uuid}'",
+                detail=f"No location found for UUID '{location_uuid}',\
+                      {location_type} and {energy_type}",
             )
         location = resp.locations[0]
 
@@ -96,7 +97,8 @@ class StorageClient(models.StorageInterface):
             forecaster = resp.forecasts[0].forecaster
         else:
             req = dp.ListForecastersRequest(
-                forecaster_names_filter=[forecaster_name], latest_versions_only=True,
+                forecaster_names_filter=[forecaster_name],
+                latest_versions_only=True,
             )
             resp = await self.dpc.list_forecasters(req)
             forecaster = resp.forecasters[0]
@@ -361,7 +363,7 @@ class StorageClient(models.StorageInterface):
     ) -> models.Location:
         """Check if a user has access to a given location."""
         req = dp.ListLocationsRequest(
-            location_uuids_filter=[location_uuid],
+            location_uuids_filter=[str(location_uuid)],
             energy_source_filter=energy_source,
             location_type_filter=location_type,
             user_oauth_id_filter=oauth_id,
