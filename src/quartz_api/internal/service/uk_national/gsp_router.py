@@ -262,7 +262,7 @@ async def get_all_available_forecasts(
     out: list[OneDatetimeManyForecastValuesMW] = [
         OneDatetimeManyForecastValuesMW(
             datetime_utc=ts,
-            forecast_values=gsp_dict,
+            forecast_values=dict(sorted(gsp_dict.items())),
         )
         for ts, gsp_dict in grouped_data.items()
     ]
@@ -345,7 +345,7 @@ async def get_truths_for_all_gsps(
     out: list[GSPYieldGroupByDatetime] = [
         GSPYieldGroupByDatetime(
             datetime_utc=ts,
-            generation_kw_by_gsp_id=gsp_dict,
+            generation_kw_by_gsp_id=dict(sorted(gsp_dict.items())),
         )
         for ts, gsp_dict in grouped_data.items()
     ]
