@@ -185,7 +185,7 @@ async def get_all_available_forecasts(
     db: models.StorageClientDependency,
     auth: AuthDependency,
     start_datetime_utc: Annotated[
-        models.UTCDatetimeDefaultNowWindowStart, 
+        models.UTCDatetimeDefaultNowWindowStart,
         AfterValidator(lambda v: pd.Timestamp(v).ceil("30min").to_pydatetime()),
     ],
     end_datetime_utc: Annotated[
