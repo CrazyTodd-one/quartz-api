@@ -35,7 +35,7 @@ class EnhancedBaseModel(BaseModel):
         from_attributes = True
         populate_by_name = True
 
-class GSPYieldGroupByDatetime(BaseModel):
+class GSPYieldGroupByDatetime(EnhancedBaseModel):
     """gsp yields for one a singel datetime.
 
     This is a legacy route that is being phased out.
