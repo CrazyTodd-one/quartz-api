@@ -4,6 +4,7 @@ from fastapi import APIRouter
 from fastapi_cache.decorator import cache
 from starlette import status
 
+from quartz_api.internal import models
 from quartz_api.internal.middleware.auth import AuthDependency
 from quartz_api.internal.models import (
     StorageClientDependency,
@@ -34,10 +35,12 @@ async def get_system_details(
     - **gsp_id**: gsp_id of the requested system
     """
     # National
-    regions = await db.get_solar_regions(type="nation")
+    regions = await db.get_locations(energy_type=models.EnergyType.SOLAR,
+                                     location_type=models.LocationType.NATION,
+                                     authdata={})
 
     national = regions[0]
-    installed_capacity_mw = national.region_metadata["effective_capacity_watts"] / 10**6
+    installed_capacity_mw = national.capacity_kilowatts / 1000
 
     location = Location(
         label="National-GB",
@@ -52,11 +55,13 @@ async def get_system_details(
         return [location]
 
     # GSP
-    regions = await db.get_solar_regions(type="gsp")
+    regions = await db.get_locations(energy_type=models.EnergyType.SOLAR,
+                                     location_type=models.LocationType.GSP,
+                                     authdata={})
 
     locations = [location]
     for region in regions:
-        location = Location.from_region(region)
+        location = Location.from_location(region)
 
         if gsp_id is not None and gsp_id != location.gsp_id:
             continue
