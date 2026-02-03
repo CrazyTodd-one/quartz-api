@@ -120,7 +120,7 @@ async def get_truths_for_a_specific_gsp(
     gsp_id: int,
     start_datetime_utc: models.UTCDatetimeDefaultWindowStart,
     end_datetime_utc: models.UTCDatetimeDefaultWindowEnd,
-    regime: Annotated[str, AfterValidator(lambda v: v.replace("_", "-"))] = "in-day",
+    regime: Annotated[str, AfterValidator(lambda v: v.replace("-", "_"))] = "in-day",
 ) -> list[GSPYield]:
     """### Get PV_Live values for a specific GSP for yesterday and today.
 
