@@ -51,6 +51,8 @@ dev = [
     "types-grpcio>=1.0.0.20251009",
     "sqlalchemy-stubs>=0.4",
     "psycopg2-binary>=2.9.11",
+    "freezegun>=1.5.5",
+
 ]
 
 [tool.uv.sources]
