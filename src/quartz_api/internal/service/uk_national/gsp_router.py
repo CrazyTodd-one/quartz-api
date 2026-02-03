@@ -20,6 +20,7 @@ from .endpoint_types import (
     GSPYield,
     GSPYieldGroupByDatetime,
     OneDatetimeManyForecastValuesMW,
+    convert_list_of_gsp_ids,
 )
 from .time_utils import (
     limit_end_datetime_by_permissions,
@@ -178,7 +179,7 @@ async def get_truths_for_a_specific_gsp(
 @router.get(
     "/forecast/all/",
     response_model=list[OneDatetimeManyForecastValuesMW],
-    include_in_schema=True,
+    include_in_schema=False,
 )
 @cache(key_builder=key_builder, expire=60 * 30)
 async def get_all_available_forecasts(
@@ -193,7 +194,7 @@ async def get_all_available_forecasts(
         Depends(limit_end_datetime_by_permissions),
     ],
     creation_utc_limit: models.UTCDatetime | None = None,
-    gsp_ids: list[int] | None = None,
+    gsp_ids: str | None = None,
 ) -> list[OneDatetimeManyForecastValuesMW]:
     """### Get all forecasts for all GSPs.
 
@@ -220,6 +221,7 @@ async def get_all_available_forecasts(
         location_type=models.LocationType.GSP,
         authdata=auth,
     )
+    gsp_ids = convert_list_of_gsp_ids(gsp_ids)
     gsp_uuid_id_map: dict[UUID, int] = {
         gsp.uuid: int(gsp.metadata["gsp_id"]) for gsp in gsps
         if gsp_ids is None or int(gsp.metadata["gsp_id"]) in gsp_ids
@@ -282,7 +284,7 @@ async def get_truths_for_all_gsps(
     start_datetime_utc: models.UTCDatetimeDefaultWindowStart, # TODO update to now
     end_datetime_utc: models.UTCDatetimeDefaultWindowEnd,
     regime: Annotated[str, AfterValidator(lambda v: v.replace("-", "_"))] = "in-day",
-    gsp_ids: list[int] | None = None,
+    gsp_ids: str | None = None,
 ) -> list[GSPYieldGroupByDatetime]:
     """### Get PV_Live values for all GSPs for yesterday and today.
 
@@ -307,6 +309,8 @@ async def get_truths_for_all_gsps(
         location_type=models.LocationType.GSP,
         authdata=auth,
     )
+
+    gsp_ids = convert_list_of_gsp_ids(gsp_ids)
     gsp_uuid_id_map: dict[UUID, int] = {
         gsp.uuid: int(gsp.metadata["gsp_id"]) for gsp in gsps
         if gsp_ids is None or int(gsp.metadata["gsp_id"]) in gsp_ids
