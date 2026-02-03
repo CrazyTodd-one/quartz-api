@@ -17,6 +17,7 @@ from .endpoint_types import (
     get_timezone,
     UTCDatetime,
     UTCDatetimeDefaultWindowEnd,
+    UTCDatetimeDefaultNowWindowStart,
     UTCDatetimeDefaultWindowStart,
     ForecastHorizon,
 )

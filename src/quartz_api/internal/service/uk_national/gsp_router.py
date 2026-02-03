@@ -185,7 +185,7 @@ async def get_all_available_forecasts(
     db: models.StorageClientDependency,
     auth: AuthDependency,
     start_datetime_utc: Annotated[
-        models.UTCDatetimeDefaultWindowStart,
+        models.UTCDatetimeDefaultNowWindowStart, 
         AfterValidator(lambda v: pd.Timestamp(v).ceil("30min").to_pydatetime()),
     ],
     end_datetime_utc: Annotated[
@@ -235,7 +235,7 @@ async def get_all_available_forecasts(
                     window_end=end_datetime_utc,
                     energy_type=models.EnergyType.SOLAR,
                     location_type=models.LocationType.GSP,
-                    authdata=auth,
+                    authdata={},
                     created_cutoff=creation_utc_limit,
                     forecast_horizon_minutes=0,
                     forecaster_name="blend",
@@ -279,7 +279,7 @@ async def get_all_available_forecasts(
 async def get_truths_for_all_gsps(
     db: models.StorageClientDependency,
     auth: AuthDependency,
-    start_datetime_utc: models.UTCDatetimeDefaultWindowStart,
+    start_datetime_utc: models.UTCDatetimeDefaultWindowStart, # TODO update to now
     end_datetime_utc: models.UTCDatetimeDefaultWindowEnd,
     regime: Annotated[str, AfterValidator(lambda v: v.replace("-", "_"))] = "in-day",
     gsp_ids: list[int] | None = None,
