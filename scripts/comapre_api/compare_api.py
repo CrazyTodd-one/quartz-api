@@ -17,6 +17,9 @@ def _():
     current_api = "https://api-dev.quartz.solar/"
     new_api = "http://uk-development-uk-national-quartz-api.eu-west-1.elasticbeanstalk.com/"
 
+    current_api = "https://api.quartz.solar/"
+    new_api = "http://uk-production-uk-national-quartz-api.eu-west-1.elasticbeanstalk.com/"
+
 
     access_token = "todo"
     return access_token, current_api, new_api
@@ -60,7 +63,6 @@ def _(access_token, current_api, new_api, requests):
             print(f"New API: Length Keys {len(data_new)}")
             if len(data) != len(data_new):
                 print(f"Error: Number of forecast values is different between the two APIs: {len(data)} != {len(data_new)}")
-
     return (compare_one_call,)
 
 
@@ -96,7 +98,6 @@ def _(compare_one_call, now, now_plus_2_days):
         for call1 in calls1:
             call1 = call1.replace("model_name=X",f"model_name={model}")
             compare_one_call(call1)
-
 
     return
 
