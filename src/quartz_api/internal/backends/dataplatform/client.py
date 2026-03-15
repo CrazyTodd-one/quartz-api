@@ -249,7 +249,7 @@ class StorageClient(models.StorageInterface):
     ) -> list[models.PredictedGenerationValue]:
         if forecaster_version is None:
             req = dp.ListForecastersRequest(
-                forecaster_names_filter=[forecaster_name],
+                forecaster_names_filter=[forecaster_name] if forecaster_name is not None else [],
                 latest_versions_only=True,
             )
             resp = await self.dpc.list_forecasters(req)
